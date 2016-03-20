@@ -1,0 +1,16 @@
+*.Rproj*
+.Rhistory
+*.Rout
+python3
+python
+ipython*
+pep8
+yapf
+pip
+.Rproj.user
+.RData
+*.bin
+*.swp
+data/
+__pycache__
+*.png
