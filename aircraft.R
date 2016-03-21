@@ -98,3 +98,10 @@ most_deadly_years <- data %>%
     group_by(Year) %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(deaths_all))
+
+# месяцы, в которых было больше всего аварий
+most_deadly_months <- data %>%
+    filter(Type == "COM") %>%
+    group_by(Month) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
