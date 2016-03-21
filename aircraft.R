@@ -63,3 +63,18 @@ accidents_per_country_com <- data %>%
     group_by(Country) %>%
     summarise(accidents = n(), passengers = sum(Deaths.P), all = sum(Deaths.T)) %>%
     arrange(desc(accidents))
+
+# статистика по странам по авариям во время посадки, взлета или набора высоты
+accidents_per_country2 <- data %>%
+    filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(Country) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(accidents))
+
+# accidents_ru <- data %>%
+#     filter(Country == "Russia") %>%
+#     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+#     group_by(Year) %>%
+#     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+#     arrange(desc(accidents))
+
