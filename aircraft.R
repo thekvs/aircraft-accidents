@@ -14,7 +14,7 @@ data <- tables[[1]]
 
 # fix names
 names(data) <- c("Deaths.T", "Deaths.C", "Deaths.P", "Deaths.G", "Deaths.N", "Type",
-              "Incident", "Aircraft", "Location", "Phase", "Airport", "Distance", "Date")
+              "Incident", "Aircraft", "Location", "Phase", "Airport", "Distance", "Date.Orig")
 
 # delete the first row
 data <- data[-1, ]
@@ -53,7 +53,7 @@ data <- data %>%
            Phase = as.factor(Phase)) %>%
     mutate(Deaths.C = as.integer(Deaths.C),
            Deaths.P = as.integer(Deaths.P)) %>%
-    mutate(Date = parsedate::parse_date(Date)) %>%
+    mutate(Date = parsedate::parse_date(Date.Orig)) %>%
     mutate(Country = make_countries(Location))
 
 accidents_per_country <- data %>%
@@ -86,6 +86,12 @@ accidents_ru_by_year <- data %>%
 accidents_us_by_year <- data %>%
     filter(Country == "US") %>%
     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(year(Date)) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
+
+most_deadly_years <- data %>%
+    filter(Type == "COM") %>%
     group_by(year(Date)) %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(deaths_all))
