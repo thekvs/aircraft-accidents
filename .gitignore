@@ -14,3 +14,4 @@ pip
 data/
 __pycache__
 *.png
+*.html
