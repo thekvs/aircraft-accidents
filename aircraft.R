@@ -81,3 +81,11 @@ accidents_ru_by_year <- data %>%
     group_by(year(Date)) %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(deaths_all))
+
+# статистика для США по годам по авариям во время посадки, взлета или набора высоты
+accidents_us_by_year <- data %>%
+    filter(Country == "US") %>%
+    filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(year(Date)) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
