@@ -1,0 +1,178 @@
+---
+title: "Aircraft accidents"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+=====
+
+Подключаем используемые в этом примере библиотеки. suppressMessages() используется чтобы подавить
+ненужную в этом случае отладочную печать при загрузке библиотек.
+```{r echo=TRUE}
+suppressMessages(library(rvest))
+suppressMessages(library(dplyr))
+suppressMessages(library(date))
+```
+Определяем разные вспомогательные функции, которые нам понадабятся в дальнейшем.
+```{r echo=TRUE}
+make_countries <- function(x) {
+    items <- strsplit(x, ",")
+    counries <- c()
+
+    for (item in items) {
+        country <- gsub(" ", "", item[length(item)])
+        counries <- c(counries, country)
+    }
+
+    return(counries)
+}
+
+empty_as_na <- function(x) {
+    return(ifelse(as.character(x) != "", x, NA))
+}
+
+extract_integer <- function(x) {
+    x <- gsub("\n.*$", "", x)
+    return(as.integer(sub(".*?([0-9]+).*", "\\1", x, perl=TRUE)))
+}
+
+```
+
+Скачиваем страницу с сайта Википедии и вытаскиваем оттуда нужную нам таблицу. Выражения XPath
+предварительно находим с помощью какого-нибудь девелоперского расширения для браузера. В данном
+случае использовался Chrome.
+```{r echo=TRUE}
+url <- "https://en.wikipedia.org/wiki/List_of_aircraft_accidents_and_incidents_resulting_in_at_least_50_fatalities"
+
+tables <- url %>%
+    read_html() %>%
+    html_nodes(xpath='//*[@id="mw-content-text"]/table[2]') %>%
+    html_table(fill=TRUE)
+
+data <- tables[[1]]
+```
+
+Исправляем имена колонок.
+```{r echo=TRUE}
+names(data) <- c("Deaths.T", "Deaths.C", "Deaths.P", "Deaths.G", "Deaths.N", "Type",
+              "Incident", "Aircraft", "Location", "Phase", "Airport", "Distance", "Date")
+```
+
+Удаляем первую строку т.к. она содержит мусорные данные.
+```{r echo=TRUE}
+data <- data[-1, ]
+```
+
+Преобразовываем данные.
+```{r echo=TRUE}
+dates <- date.mdy(as.date(data$Date))
+
+data <- data %>%
+    mutate(Phase = gsub("\n.*$", "", Phase)) %>%
+    mutate(Phase = gsub("[0-9]+", "", Phase)) %>%
+    mutate(Phase = gsub("\\[\\]", "", Phase)) %>%
+    mutate(Deaths.G = as.vector(sapply(Deaths.G, extract_integer))) %>%
+    mutate(Deaths.T = as.vector(sapply(Deaths.T, extract_integer))) %>%
+    mutate_each(funs(empty_as_na)) %>%
+    mutate(Type = as.factor(Type),
+           Phase = as.factor(Phase)) %>%
+    mutate(Deaths.C = as.integer(Deaths.C),
+           Deaths.P = as.integer(Deaths.P)) %>%
+    mutate(Day = as.integer(dates$day),
+           Month = as.integer(dates$month),
+           Year = as.integer(dates$year)) %>%
+    mutate(Country = make_countries(Location))
+```
+
+Первым делом рассчитаем количество аварий и жертв в них сгруппировав данные по странам.
+```{r echo=TRUE}
+accidents_per_country <- data %>%
+    group_by(Country) %>%
+    summarise(accidents = n(), passengers = sum(Deaths.P), all = sum(Deaths.T)) %>%
+    arrange(desc(accidents))
+
+head(accidents_per_country, 10)
+```
+
+То же самое, что и в предыдущем примере, но теперь только для коммерческих полетов.
+```{r echo=TRUE}
+accidents_per_country_com <- data %>%
+    filter(Type == "COM") %>%
+    group_by(Country) %>%
+    summarise(accidents = n(), passengers = sum(Deaths.P), all = sum(Deaths.T)) %>%
+    arrange(desc(accidents))
+
+head(accidents_per_country_com, 10)
+```
+
+Статистика по странам по авариям во время посадки, взлета или набора высоты для коммерческих
+перевозчиков.
+```{r echo=TRUE}
+accidents_per_country2 <- data %>%
+    filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(Country) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(accidents))
+
+head(accidents_per_country2, 20)
+```
+
+Статистика для России по годам по авариям во время посадки, взлета или набора высоты для коммерческих
+перевозчиков.
+```{r echo=TRUE}
+accidents_ru_by_year <- data %>%
+    filter(Country == "Russia") %>%
+    filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(Year) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
+
+head(accidents_ru_by_year, 20)
+```
+
+```{r echo=TRUE}
+# статистика для США по годам по авариям во время посадки, взлета или набора высоты
+accidents_us_by_year <- data %>%
+    filter(Country == "US") %>%
+    filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(Year) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
+
+most_deadly_years <- data %>%
+    filter(Type == "COM") %>%
+    group_by(Year) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
+
+# месяцы, в которых было больше всего аварий
+most_deadly_months <- data %>%
+    filter(Type == "COM") %>%
+    group_by(Month) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
+
+```
