@@ -41,6 +41,19 @@ extract_integer <- function(x) {
     return(as.integer(sub(".*?([0-9]+).*", "\\1", x, perl=TRUE)))
 }
 
+my_parse_date <- function(x) {
+    items <- strsplit(x, " ")
+    if (length(items[[1]]) == 3) {
+        # we do this trick because parsedate::parse_date() incorrectly parses
+        # years before 1970
+        p <- parsedate::parse_date(x)
+        s <- sprintf("%d-%d-%s", day(p), month(p), items[[1]][3])
+        return(dmy(s))
+    } else {
+        return(NA)
+    }
+}
+
 # cleanup and massage data
 data <- data %>%
     mutate(Phase = gsub("\n.*$", "", Phase)) %>%
@@ -53,7 +66,7 @@ data <- data %>%
            Phase = as.factor(Phase)) %>%
     mutate(Deaths.C = as.integer(Deaths.C),
            Deaths.P = as.integer(Deaths.P)) %>%
-    mutate(Date = parsedate::parse_date(Date.Orig)) %>%
+    mutate(Date = as.vector(sapply(Date.Orig, my_parse_date))) %>%
     mutate(Country = make_countries(Location))
 
 accidents_per_country <- data %>%
