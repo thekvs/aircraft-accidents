@@ -1,5 +1,7 @@
 library(rvest)
 library(dplyr)
+library(parsedate)
+library(lubridate)
 
 url <- "https://en.wikipedia.org/wiki/List_of_aircraft_accidents_and_incidents_resulting_in_at_least_50_fatalities"
 
@@ -51,6 +53,7 @@ data <- data %>%
            Phase = as.factor(Phase)) %>%
     mutate(Deaths.C = as.integer(Deaths.C),
            Deaths.P = as.integer(Deaths.P)) %>%
+    mutate(Date = parsedate::parse_date(Date)) %>%
     mutate(Country = make_countries(Location))
 
 accidents_per_country <- data %>%
@@ -71,10 +74,10 @@ accidents_per_country2 <- data %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(accidents))
 
-# accidents_ru <- data %>%
-#     filter(Country == "Russia") %>%
-#     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
-#     group_by(Year) %>%
-#     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
-#     arrange(desc(accidents))
-
+# статистика для России по годам по авариям во время посадки, взлета или набора высоты
+accidents_ru_by_year <- data %>%
+    filter(Country == "Russia") %>%
+    filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
+    group_by(year(Date)) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
