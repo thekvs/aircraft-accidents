@@ -1,41 +1,24 @@
 ---
 title: "Aircraft accidents"
-output: html_document
+output:
+  html_document:
+  md_document:
+    variant: markdown_github
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Для анализа использовались данные, приведенный на [странице](https://en.wikipedia.org/wiki/List_of_aircraft_accidents_and_incidents_resulting_in_at_least_50_fatalities) сайта WikiPedia.
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-=====
-
-Подключаем используемые в этом примере библиотеки. suppressMessages() используется чтобы подавить
-ненужную в этом случае отладочную печать при загрузке библиотек.
+Подключаем используемые в этом примере библиотеки. Враппер suppressMessages() используется,
+чтобы подавить ненужную в этом случае отладочную печать при загрузке библиотек.
 ```{r echo=TRUE}
 suppressMessages(library(rvest))
 suppressMessages(library(dplyr))
 suppressMessages(library(date))
 ```
+
 Определяем разные вспомогательные функции, которые нам понадабятся в дальнейшем.
 ```{r echo=TRUE}
 make_countries <- function(x) {
@@ -81,12 +64,12 @@ names(data) <- c("Deaths.T", "Deaths.C", "Deaths.P", "Deaths.G", "Deaths.N", "Ty
               "Incident", "Aircraft", "Location", "Phase", "Airport", "Distance", "Date")
 ```
 
-Удаляем первую строку т.к. она содержит мусорные данные.
+Удаляем первую строку т.к. она содержит мусор.
 ```{r echo=TRUE}
 data <- data[-1, ]
 ```
 
-Преобразовываем данные.
+Чистим и преобразовываем данные.
 ```{r echo=TRUE}
 dates <- date.mdy(as.date(data$Date))
 
@@ -111,10 +94,10 @@ data <- data %>%
 ```{r echo=TRUE}
 accidents_per_country <- data %>%
     group_by(Country) %>%
-    summarise(accidents = n(), passengers = sum(Deaths.P), all = sum(Deaths.T)) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(accidents))
 
-head(accidents_per_country, 10)
+head(accidents_per_country, 20)
 ```
 
 То же самое, что и в предыдущем примере, но теперь только для коммерческих полетов.
@@ -122,10 +105,10 @@ head(accidents_per_country, 10)
 accidents_per_country_com <- data %>%
     filter(Type == "COM") %>%
     group_by(Country) %>%
-    summarise(accidents = n(), passengers = sum(Deaths.P), all = sum(Deaths.T)) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(accidents))
 
-head(accidents_per_country_com, 10)
+head(accidents_per_country_com, 20)
 ```
 
 Статистика по странам по авариям во время посадки, взлета или набора высоты для коммерческих
@@ -140,8 +123,20 @@ accidents_per_country2 <- data %>%
 head(accidents_per_country2, 20)
 ```
 
-Статистика для России по годам по авариям во время посадки, взлета или набора высоты для коммерческих
-перевозчиков.
+Статистика по странам по авариям из-за внешнего воздействия на самолёт (взрыв на борту, ракета),
+сортировку производим по общему количеству жертв.
+```{r}
+accidents_per_country3 <- data %>%
+    filter(Type %in% c("INB", "EXG", "EXS")) %>%
+    group_by(Country) %>%
+    summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
+    arrange(desc(deaths_all))
+
+head(accidents_per_country3, 20)
+```
+
+Статистика для России по годам по авариям во время посадки, взлета или набора высоты для
+коммерческих перевозчиков. Сортировку производим по общему количеству жертв.
 ```{r echo=TRUE}
 accidents_ru_by_year <- data %>%
     filter(Country == "Russia") %>%
@@ -153,8 +148,9 @@ accidents_ru_by_year <- data %>%
 head(accidents_ru_by_year, 20)
 ```
 
+Статистика для США по годам по авариям во время посадки, взлета или набора высоты для
+коммерческих перевозчиков. Сортировку производим по общему количеству жертв.
 ```{r echo=TRUE}
-# статистика для США по годам по авариям во время посадки, взлета или набора высоты
 accidents_us_by_year <- data %>%
     filter(Country == "US") %>%
     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
@@ -162,17 +158,25 @@ accidents_us_by_year <- data %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(deaths_all))
 
+head(accidents_us_by_year, 20)
+```
+
+Года в которых было больше всего жертв аварий по всем странам.
+```{r echo=TRUE}
 most_deadly_years <- data %>%
-    filter(Type == "COM") %>%
     group_by(Year) %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(deaths_all))
 
-# месяцы, в которых было больше всего аварий
+head(most_deadly_years, 20)
+```
+
+Месяцы в которых было больше всего жертв аварий по всем странам по всем полетам.
+```{r echo=TRUE}
 most_deadly_months <- data %>%
-    filter(Type == "COM") %>%
     group_by(Month) %>%
     summarise(accidents = n(), deaths_passengers = sum(Deaths.P), deaths_all = sum(Deaths.T)) %>%
     arrange(desc(deaths_all))
 
+head(most_deadly_months, 12)
 ```
