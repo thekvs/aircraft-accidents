@@ -1,10 +1,5 @@
----
-title: "Aircraft accidents"
-output:
-  html_document:
-  md_document:
-    variant: markdown_github
----
+# Aircraft accidents
+Konstantin Sorokin  
 
 
 Для анализа использовались данные, приведенный на [странице](https://en.wikipedia.org/wiki/List_of_aircraft_accidents_and_incidents_resulting_in_at_least_50_fatalities) сайта WikiPedia.

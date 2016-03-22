@@ -1,9 +1,9 @@
 ---
 title: "Aircraft accidents"
-output:
-  html_document:
-  md_document:
-    variant: markdown_github
+author: "Konstantin Sorokin"
+output:  
+  html_document:  
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
