@@ -13,5 +13,4 @@ pip
 *.swp
 data/
 __pycache__
-*.png
 *.html
