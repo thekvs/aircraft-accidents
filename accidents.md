@@ -94,7 +94,9 @@ data <- data %>%
 ```r
 accidents_per_country <- data %>%
     group_by(Country) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Accidents))
 
 kable(head(accidents_per_country, 20), format="markdown")
@@ -131,7 +133,9 @@ kable(head(accidents_per_country, 20), format="markdown")
 accidents_per_country_com <- data %>%
     filter(Type == "COM") %>%
     group_by(Country) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Accidents))
 
 kable(head(accidents_per_country_com, 20), format="markdown")
@@ -169,7 +173,9 @@ kable(head(accidents_per_country_com, 20), format="markdown")
 accidents_per_country2 <- data %>%
     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
     group_by(Country) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Accidents))
 
 kable(head(accidents_per_country2, 20), format="markdown")
@@ -207,7 +213,9 @@ kable(head(accidents_per_country2, 20), format="markdown")
 accidents_per_country3 <- data %>%
     filter(Type %in% c("INB", "EXG", "EXS")) %>%
     group_by(Country) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
 kable(head(accidents_per_country3, 20), format="markdown")
@@ -246,7 +254,9 @@ accidents_ru_by_year <- data %>%
     filter(Country == "Russia") %>%
     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
     group_by(Year) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
 kable(head(accidents_ru_by_year, 20), format="markdown")
@@ -275,7 +285,9 @@ accidents_us_by_year <- data %>%
     filter(Country == "US") %>%
     filter(Phase %in% c("LDG", "TOF", "ICL") & Type == "COM") %>%
     group_by(Year) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
 kable(head(accidents_us_by_year, 20), format="markdown")
@@ -299,7 +311,9 @@ kable(head(accidents_us_by_year, 20), format="markdown")
 ```r
 most_deadly_years <- data %>%
     group_by(Year) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
 kable(head(most_deadly_years, 20), format="markdown")
@@ -335,7 +349,9 @@ kable(head(most_deadly_years, 20), format="markdown")
 ```r
 most_deadly_months <- data %>%
     group_by(Month) %>%
-    summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
+    summarise(Accidents = n(),
+              Deaths.Passengers = sum(Deaths.P),
+              Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
 kable(head(most_deadly_months, 12), format="markdown")
