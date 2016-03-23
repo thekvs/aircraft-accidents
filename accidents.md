@@ -11,6 +11,7 @@ Konstantin Sorokin
 suppressMessages(library(rvest))
 suppressMessages(library(dplyr))
 suppressMessages(library(date))
+suppressMessages(library(ggplot2))
 suppressMessages(library(knitr))
 ```
 
@@ -127,6 +128,16 @@ kable(head(accidents_per_country, 20), format="markdown")
 |SaudiArabia |         7|               978|         1049|
 |UK          |         7|               592|          706|
 
+```r
+ggplot(accidents_per_country[1:20,], aes(x = reorder(Country, Accidents), y = Accidents)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Countries") +
+    ylab("Number of accidents") +
+    theme(legend.position = "none")
+```
+
+![](accidents_files/figure-html/unnamed-chunk-7-1.png)
+
 То же самое, что и в предыдущем примере, но теперь только для коммерческих полетов.
 
 ```r
@@ -165,6 +176,16 @@ kable(head(accidents_per_country_com, 20), format="markdown")
 |Thailand  |         6|               578|          643|
 |Ecuador   |         5|               274|          368|
 |Egypt     |         5|               433|          476|
+
+```r
+ggplot(accidents_per_country_com[1:20,], aes(x = reorder(Country, Accidents), y = Accidents)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Countries") +
+    ylab("Number of accidents") +
+    theme(legend.position = "none")
+```
+
+![](accidents_files/figure-html/unnamed-chunk-8-1.png)
 
 Статистика по странам по авариям во время посадки, взлета или набора высоты для коммерческих
 перевозчиков.
@@ -206,6 +227,16 @@ kable(head(accidents_per_country2, 20), format="markdown")
 |Bolivia    |         1|                 0|           91|
 |Cameroon   |         1|               101|          111|
 
+```r
+ggplot(accidents_per_country2[1:20,], aes(x = reorder(Country, Accidents), y = Accidents)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Countries") +
+    ylab("Number of accidents") +
+    theme(legend.position = "none")
+```
+
+![](accidents_files/figure-html/unnamed-chunk-9-1.png)
+
 Статистика по странам по авариям из-за внешнего воздействия на самолёт (взрыв на борту, ракета),
 сортировку производим по общему количеству жертв.
 
@@ -246,6 +277,16 @@ kable(head(accidents_per_country3, 20), format="markdown")
 |Russia             |         1|                76|           84|
 |Italy              |         1|                77|           81|
 
+```r
+ggplot(accidents_per_country3[1:20,], aes(x = reorder(Country, Deaths.Total), y = Deaths.Total)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Countries") +
+    ylab("Number of victims") +
+    theme(legend.position = "none")
+```
+
+![](accidents_files/figure-html/unnamed-chunk-10-1.png)
+
 Статистика для России по годам по авариям во время посадки, взлета или набора высоты для
 коммерческих перевозчиков. Сортировку производим по общему количеству жертв.
 
@@ -277,6 +318,21 @@ kable(head(accidents_ru_by_year, 20), format="markdown")
 | 2016|         1|                55|           62|
 | 2013|         1|                44|           50|
 
+```r
+ggplot(accidents_ru_by_year[1:20,], aes(x = reorder(as.factor(Year), Deaths.Total),
+                                        y = Deaths.Total)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Year") +
+    ylab("Number of victims") +
+    theme(legend.position = "none")
+```
+
+```
+## Warning: Removed 10 rows containing missing values (position_stack).
+```
+
+![](accidents_files/figure-html/unnamed-chunk-11-1.png)
+
 Статистика для США по годам по авариям во время посадки, взлета или набора высоты для
 коммерческих перевозчиков. Сортировку производим по общему количеству жертв.
 
@@ -305,6 +361,21 @@ kable(head(accidents_us_by_year, 20), format="markdown")
 | 1985|         1|                64|           70|
 | 1960|         1|                59|           62|
 | 1949|         1|                52|           53|
+
+```r
+ggplot(accidents_us_by_year[1:20,], aes(x = reorder(as.factor(Year), Deaths.Total),
+                                        y = Deaths.Total)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Year") +
+    ylab("Number of victims") +
+    theme(legend.position = "none")
+```
+
+```
+## Warning: Removed 12 rows containing missing values (position_stack).
+```
+
+![](accidents_files/figure-html/unnamed-chunk-12-1.png)
 
 Статистика по годам в которых было больше всего жертв аварий по всем странам.
 
@@ -354,7 +425,7 @@ most_deadly_months <- data %>%
               Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
-kable(head(most_deadly_months, 12), format="markdown")
+kable(most_deadly_months, format="markdown")
 ```
 
 
@@ -373,3 +444,13 @@ kable(head(most_deadly_months, 12), format="markdown")
 |     5|        32|              3022|         3466|
 |     1|        37|              2827|         3453|
 |     4|        30|              2401|         2784|
+
+```r
+ggplot(most_deadly_months, aes(x = as.factor(Month), y = Deaths.Total)) +
+    geom_bar(stat = "identity") + coord_flip() +
+    xlab("Month number") +
+    ylab("Number of victims") +
+    theme(legend.position = "none")
+```
+
+![](accidents_files/figure-html/unnamed-chunk-14-1.png)
