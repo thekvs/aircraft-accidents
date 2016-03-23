@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 suppressMessages(library(rvest))
 suppressMessages(library(dplyr))
 suppressMessages(library(date))
+suppressMessages(library(knitr))
 ```
 
 Определяем разные вспомогательные функции, которые нам понадобятся в дальнейшем.
@@ -97,7 +98,7 @@ accidents_per_country <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Accidents))
 
-head(accidents_per_country, 20)
+kable(head(accidents_per_country, 20), format="markdown")
 ```
 
 То же самое, что и в предыдущем примере, но теперь только для коммерческих полетов.
@@ -108,7 +109,7 @@ accidents_per_country_com <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Accidents))
 
-head(accidents_per_country_com, 20)
+kable(head(accidents_per_country_com, 20), format="markdown")
 ```
 
 Статистика по странам по авариям во время посадки, взлета или набора высоты для коммерческих
@@ -120,7 +121,7 @@ accidents_per_country2 <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Accidents))
 
-head(accidents_per_country2, 20)
+kable(head(accidents_per_country2, 20), format="markdown")
 ```
 
 Статистика по странам по авариям из-за внешнего воздействия на самолёт (взрыв на борту, ракета),
@@ -132,7 +133,7 @@ accidents_per_country3 <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
-head(accidents_per_country3, 20)
+kable(head(accidents_per_country3, 20), format="markdown")
 ```
 
 Статистика для России по годам по авариям во время посадки, взлета или набора высоты для
@@ -145,7 +146,7 @@ accidents_ru_by_year <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
-head(accidents_ru_by_year, 20)
+kable(head(accidents_ru_by_year, 20), format="markdown")
 ```
 
 Статистика для США по годам по авариям во время посадки, взлета или набора высоты для
@@ -158,7 +159,7 @@ accidents_us_by_year <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
-head(accidents_us_by_year, 20)
+kable(head(accidents_us_by_year, 20), format="markdown")
 ```
 
 Статистика по годам в которых было больше всего жертв аварий по всем странам.
@@ -168,7 +169,7 @@ most_deadly_years <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
-head(most_deadly_years, 20)
+kable(head(most_deadly_years, 20), format="markdown")
 ```
 
 Статистика по месяцам в которых было больше всего жертв аварий по всем странам по всем полетам.
@@ -178,5 +179,5 @@ most_deadly_months <- data %>%
     summarise(Accidents = n(), Deaths.Passengers = sum(Deaths.P), Deaths.Total = sum(Deaths.T)) %>%
     arrange(desc(Deaths.Total))
 
-head(most_deadly_months, 12)
+kable(head(most_deadly_months, 12), format="markdown")
 ```
