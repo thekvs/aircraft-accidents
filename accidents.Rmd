@@ -9,9 +9,9 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-Для анализа использовались данные, приведенный на [странице](https://en.wikipedia.org/wiki/List_of_aircraft_accidents_and_incidents_resulting_in_at_least_50_fatalities) сайта WikiPedia.
+Для анализа использовались данные, приведенные на [странице](https://en.wikipedia.org/wiki/List_of_aircraft_accidents_and_incidents_resulting_in_at_least_50_fatalities) сайта WikiPedia.
 
-Подключаем используемые в этом примере библиотеки. Враппер suppressMessages() используется,
+Подключаем используемые в этом примере библиотеки. Враппер suppressMessages() используется
 чтобы подавить ненужную в этом случае отладочную печать при загрузке библиотек.
 ```{r echo=TRUE}
 suppressMessages(library(rvest))
@@ -19,7 +19,7 @@ suppressMessages(library(dplyr))
 suppressMessages(library(date))
 ```
 
-Определяем разные вспомогательные функции, которые нам понадабятся в дальнейшем.
+Определяем разные вспомогательные функции, которые нам понадобятся в дальнейшем.
 ```{r echo=TRUE}
 make_countries <- function(x) {
     items <- strsplit(x, ",")
@@ -44,7 +44,7 @@ extract_integer <- function(x) {
 
 ```
 
-Скачиваем страницу с сайта Википедии и вытаскиваем оттуда нужную нам таблицу. Выражения XPath
+Скачиваем страницу с сайта Википедии и вытаскиваем оттуда нужную нам таблицу. Выражение XPath
 предварительно находим с помощью какого-нибудь девелоперского расширения для браузера. В данном
 случае использовался Chrome.
 ```{r echo=TRUE}
@@ -90,7 +90,7 @@ data <- data %>%
     mutate(Country = make_countries(Location))
 ```
 
-Первым делом рассчитаем количество аварий и жертв в них сгруппировав данные по странам.
+Первым делом рассчитаем количество аварий и жертв в них, сгруппировав данные по странам.
 ```{r echo=TRUE}
 accidents_per_country <- data %>%
     group_by(Country) %>%
@@ -161,7 +161,7 @@ accidents_us_by_year <- data %>%
 head(accidents_us_by_year, 20)
 ```
 
-Года в которых было больше всего жертв аварий по всем странам.
+Статистика по годам в которых было больше всего жертв аварий по всем странам.
 ```{r echo=TRUE}
 most_deadly_years <- data %>%
     group_by(Year) %>%
@@ -171,7 +171,7 @@ most_deadly_years <- data %>%
 head(most_deadly_years, 20)
 ```
 
-Месяцы в которых было больше всего жертв аварий по всем странам по всем полетам.
+Статистика по месяцам в которых было больше всего жертв аварий по всем странам по всем полетам.
 ```{r echo=TRUE}
 most_deadly_months <- data %>%
     group_by(Month) %>%
